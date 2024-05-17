@@ -1,0 +1,22 @@
+{
+    "name": "template",
+    "version": "1.0.0",
+    "description": "",
+    "main": "build/main.js",
+    "scripts": {
+      "compile": "tsc",
+      "dev": "npm run compile && npm start",
+      "start": "cd build && npm start",
+      "sandbox": "cd build && node",
+      "clean": "rmdir /S /Q \"build/Logs/LogFiles\"",
+      "zip": "tar.exe -a -c -f build.zip build"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+    },
+    "devDependencies": {
+      "@types/node": "latest"
+    }
+  }
+  
