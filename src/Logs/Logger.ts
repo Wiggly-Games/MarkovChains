@@ -1,5 +1,5 @@
 import * as File from "../Files/Files"
-import * as Configuration from '../Configuration.json'
+import * as Configuration from '../../Configuration.json'
 
 const LogsDirectory : string = `${process.cwd()}\\${Configuration.LogFiles.Directory}`;
 File.CreateDirectory(LogsDirectory);

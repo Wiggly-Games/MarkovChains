@@ -1,5 +1,9 @@
 {
     "LogFiles": {
         "Directory": "Logs\\LogFiles",
+        "Database": "Database.log"
+    },
+    "Paths": {
+        "Database": "Static/Database.db"
     }
 }
