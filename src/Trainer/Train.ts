@@ -53,9 +53,14 @@ export async function Train(data: IData, trainingSet: string) {
     // Whether or not we want to shorten sequences to give a wider variety of options.
     const backoff = Training.Backoff;
 
+    // Create a set of Promises to train against each sequence,
+    // Then wait for all the sequences to complete
     await Promise.all(sequences.map(sequence => {
-        return new Promise<void>(async (fulfill, reject) => {
+        return new Promise<void>(async (fulfill) => {
+            // Split the sequence into separate words
             let words = SplitWords(sequence);
+
+            // The first word can be used to start a new sequence.
             data.AddStartingKey(words[0]);
 
             // Go through every word to add it to our chain.
