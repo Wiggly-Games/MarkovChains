@@ -1,1 +1,1 @@
-import * as Data from "./Data";
+console.log("Logic");
