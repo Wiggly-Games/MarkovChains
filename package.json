@@ -4,19 +4,19 @@
     "description": "",
     "main": "build/main.js",
     "scripts": {
-      "compile": "tsc",
-      "dev": "npm run compile && npm start",
-      "start": "cd build && npm start",
-      "sandbox": "cd build && node",
-      "clean": "rmdir /S /Q \"build/Logs/LogFiles\"",
-      "zip": "tar.exe -a -c -f build.zip build"
+        "compile": "tsc",
+        "dev": "npm run compile && npm start",
+        "start": "cd build && npm start",
+        "sandbox": "cd build && node",
+        "clean": "rmdir /S /Q \"build/Logs/LogFiles\"",
+        "zip": "tar.exe -a -c -f build.zip build"
     },
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "sqlite": "^3.0.6"
     },
     "devDependencies": {
-      "@types/node": "latest"
+        "@types/node": "latest"
     }
-  }
-  
+}
