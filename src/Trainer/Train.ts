@@ -21,6 +21,10 @@ async function addToData(data: IData, sequence: string[], index: number, maxChai
     if (maxChainLength === 0) {
         return;
     }
+
+    // Our chain can be at most the number of words we've seen so far.
+    // For example, if we're on word index 1, then we've seen one word; our max chain length would be the 1 word we've seen so far.
+    // As example: "A dog walks fast", index 2 (walks): Our max chain size is "A dog", which is 2.
     if (maxChainLength > index) {
         maxChainLength = index;
     }
