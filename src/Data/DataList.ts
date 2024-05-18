@@ -12,8 +12,11 @@ export class DataList implements IData {
         this._list = new Map<string, string[]>();
         this._startingKeys = new Map<string, number>();
     }
+    GetCount(sequence: string): Promise<number> {
+        return Promise.resolve(this._list.has(sequence) ? this._list.get(sequence).length : 0);
+    }
     Get(sequence: string): Promise<string | undefined> {
-        let results = this._list[sequence];
+        let results = this._list.get(sequence);
     
         // If there is no next word for this sequence, return nothing.
         if (!results) {
@@ -22,18 +25,18 @@ export class DataList implements IData {
     
         // Otherwise, we can pick a random word from our list.
         // NOTE: We may want to fix this later with probabilities instead, to save memory.
-        return results[Math.floor(Math.random() * results.length)];
+        return Promise.resolve(results[Math.floor(Math.random() * results.length)]);
     }
     Add(sequence: string, next: string): Promise<void> {
         const list = this._list;
 
         // If we haven't already seen this sequence, start a new list.
-        if (!(sequence in list)) {
-            list[sequence] = [ ];
+        if (!list.has(sequence)) {
+            list.set(sequence, []);
         }
-    
-        // Add the word after our sequence
-        list[sequence].push(next);
+
+        list.get(sequence).push(next);
+        
         return;
     }
     GetStartKey(): Promise<string> {
@@ -45,7 +48,7 @@ export class DataList implements IData {
         // 1. We need to create a list of all the keys that we've seen with their probabilities of occurring.
         let counter = 0;
         let list = [ ];
-        for (const [key, numberSeen] of Object.entries(startingKeys)){
+        for (const [key, numberSeen] of startingKeys.entries()){
             counter += numberSeen;
             list.push({
                 size: counter,
@@ -70,13 +73,12 @@ export class DataList implements IData {
         
         // If we've seen this key already, increment the number of times we've seen it.
         // If not, set it to 1, as we've only seen it once.
-        if (key in startingKeys) {
-            startingKeys[key] ++;
+        if (startingKeys.has(key)) {
+            startingKeys.set(key, startingKeys.get(key) + 1);
         } else {
-            startingKeys[key] = 1;
+            startingKeys.set(key, 1);
         }
 
         return;
     }
-
 }

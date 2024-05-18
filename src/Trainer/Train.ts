@@ -12,8 +12,8 @@
 
 
 import { IData } from "../../interfaces";
-import { SplitSentences, SplitWords } from "../Helpers";
-import { Training } from "../../Configuration.json";
+import { JoinWords, SplitSentences, SplitWords } from "../Helpers";
+import { Backoff, MaxChainLength } from "../../Configuration.json";
 
 // Adds the sequence to our data set.
 // Given the index of the new word to add, the total number of words that builds up a single sequence, and whether or not to apply backoff.
@@ -35,7 +35,7 @@ async function addToData(data: IData, sequence: string[], index: number, maxChai
     let totalSequence = sequence.slice(Math.max(0, index - maxChainLength), index);
     let nextWord = sequence[index];
 
-    await data.Add(totalSequence.join(" "), nextWord);
+    await data.Add(JoinWords(totalSequence), nextWord);
 
     // If we're performing backoff, shorten the string
     if (backoff) {
@@ -48,10 +48,10 @@ export async function Train(data: IData, trainingSet: string) {
     const sequences = SplitSentences(trainingSet);
 
     // The number of words that builds up a single sequence.
-    const maxChainLength = Training.MaxChainLength;
+    const maxChainLength = MaxChainLength;
 
     // Whether or not we want to shorten sequences to give a wider variety of options.
-    const backoff = Training.Backoff;
+    const backoff = Backoff;
 
     // Create a set of Promises to train against each sequence,
     // Then wait for all the sequences to complete
@@ -65,8 +65,6 @@ export async function Train(data: IData, trainingSet: string) {
 
             // Go through every word to add it to our chain.
             for (let i = 1; i < words.length; i++) {
-                console.log(`Adding word ${i}: ${words[i]}`)
-                
                 // From here, we train against the last X words.
                 await addToData(data, words, i, maxChainLength, backoff);
             }
