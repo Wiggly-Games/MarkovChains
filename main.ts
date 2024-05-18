@@ -2,15 +2,20 @@
     Currently designed to test Training.
 */
 
+import { IData } from "./interfaces";
 import { DataList, Generate, Train } from "./src";
-import * as TrainingSet from "./TestData/WeirdAl.json";
 
-(async () => {
-    const list = new DataList();
-    await Train(list, TrainingSet.join("\n"));
-
-    for (let i = 0; i < 100; i++) {
-        const response = await Generate(list);
-        console.log(response + "\n\n");
+export class MarkovChain {
+    _chain: IData;
+    constructor() {
+        this._chain = new DataList();
     }
-})();
+
+    async Train(data: string) {
+        await Train(this._chain, data);
+    }
+    
+    async Generate(): Promise<string> {
+        return await Generate(this._chain);
+    }
+}
