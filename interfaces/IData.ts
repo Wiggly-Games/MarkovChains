@@ -11,9 +11,11 @@
         GetStartKey(): string -> Returns a random word that we can use to start off a new sequence.
         Get(sequence: string): string | undefined -> Returns the next word that can be built from the preceding sequence, 
          or undefined if no words can be found from the sequence.
+        GetCount(sequence: string): number -> Returns the number of words that can be linked from the preceding sequence.
 */
 
 export interface IData {
+    GetCount(sequence: string): Promise<number>;
     Get(sequence: string): Promise<string | undefined>;
     Add(sequence: string, next: string): Promise<void>;
 

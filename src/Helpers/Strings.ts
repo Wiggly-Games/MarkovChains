@@ -15,3 +15,8 @@ export function SplitSentences(trainingSet: string): string[] {
 export function SplitWords(sequence: string): string[] {
     return ClearBlanks(sequence.split(" "));
 }
+
+// Joins a bunch of words together to form a sentence.
+export function JoinWords(sequence: string[]): string {
+    return sequence.join(" ");
+}

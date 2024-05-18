@@ -6,8 +6,11 @@
     "Paths": {
         "Database": "Static/Database.db"
     },
-    "Training": {
-        "MaxChainLength": 5,
-        "Backoff": true
-    }
+    "Generator": {
+        "WordCount": 50,
+        "MinWordsToSelectFrom": 3,
+        "MinChainLength": 2
+    },
+    "MaxChainLength": 5,
+    "Backoff": true
 }
