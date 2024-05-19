@@ -1,5 +1,5 @@
 /*
-    Currently designed to test Training.
+    Main library for the Markov Chain text generator.
 */
 
 import { IData } from "./interfaces";
@@ -10,11 +10,9 @@ export class MarkovChain {
     constructor() {
         this._chain = new DataList();
     }
-
     async Train(data: string) {
         await Train(this._chain, data);
     }
-    
     async Generate(): Promise<string> {
         return await Generate(this._chain);
     }

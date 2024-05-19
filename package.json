@@ -1,5 +1,5 @@
 {
-    "name": "template",
+    "name": "wiggly-chains",
     "version": "1.0.0",
     "description": "",
     "main": "build/main.js",
@@ -7,15 +7,13 @@
         "compile": "tsc",
         "dev": "npm run compile && npm start",
         "start": "cd build && npm start",
+        "test": "npm run compile && cd build && npm run test",
         "sandbox": "cd build && node",
         "clean": "rmdir /S /Q \"build/Logs/LogFiles\"",
         "zip": "tar.exe -a -c -f build.zip build"
     },
     "author": "",
     "license": "ISC",
-    "dependencies": {
-        "sqlite": "^3.0.6"
-    },
     "devDependencies": {
         "@types/node": "latest"
     }
