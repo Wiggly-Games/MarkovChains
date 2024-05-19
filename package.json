@@ -1,5 +1,5 @@
 {
-    "name": "wiggly-chains",
+    "name": "@wiggly-games/markov-chains",
     "version": "1.0.0",
     "description": "",
     "main": "build/main.js",
