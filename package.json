@@ -1,5 +1,5 @@
 {
-    "name": "template",
+    "name": "wiggly-chains",
     "version": "1.0.0",
     "description": "",
     "main": "build/main.js",
@@ -14,9 +14,6 @@
     },
     "author": "",
     "license": "ISC",
-    "dependencies": {
-        "sqlite": "^3.0.6"
-    },
     "devDependencies": {
         "@types/node": "latest"
     }
