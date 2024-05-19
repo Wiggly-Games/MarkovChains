@@ -2,10 +2,10 @@
     Main library for the Markov Chain text generator.
 */
 
-import { IData } from "./interfaces";
+import { IData, IMarkovChain } from "./interfaces";
 import { DataList, Generate, Train } from "./src";
 
-export class MarkovChain {
+export class MarkovChain implements IMarkovChain {
     _chain: IData;
     constructor() {
         this._chain = new DataList();
