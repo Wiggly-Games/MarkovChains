@@ -3,12 +3,12 @@
 */
 
 import { IData, IMarkovChain } from "./interfaces";
-import { DataList, Generate, Train } from "./src";
+import { Generate, MemoryData, PersistentData, Train} from "./src";
 
 export class MarkovChain implements IMarkovChain {
     _chain: IData;
-    constructor() {
-        this._chain = new DataList();
+    constructor(path?: string | undefined) {
+        this._chain = (path !== undefined) ? new PersistentData(path) : new MemoryData();
     }
     async Train(data: string) {
         await Train(this._chain, data);

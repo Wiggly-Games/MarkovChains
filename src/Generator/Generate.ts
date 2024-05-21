@@ -1,6 +1,6 @@
 import { Generator, MaxChainLength, Backoff } from "../../Configuration.json";
 import { IData } from "../../interfaces";
-import { GetEndSequence, JoinWords } from "../Helpers";
+import { Arrays, Strings } from "../Helpers";
 
 // Gets the max chain length that we can use to generate the target number of options.
 async function GetChainLength(data: IData, sequence: string[], chainLength: number, minChainLength: number, minWordsToSelect: number): Promise<number>
@@ -8,7 +8,7 @@ async function GetChainLength(data: IData, sequence: string[], chainLength: numb
     // Check first maxChainLength words from the end of the sequence, if the count is bigger than minWords, we select one from that sequence.
     // Otherwise, drop chain length by 1, and repeat. End if we hit 1 word. Return the result.
     while (chainLength > minChainLength) {
-        let numOptions = await data.GetCount(JoinWords(GetEndSequence(sequence, chainLength)));
+        let numOptions = await data.GetCount(Strings.JoinWords(Arrays.GetEndSequence(sequence, chainLength)));
 
         // If we have enough options, take a chain of this length.
         if (numOptions >= minWordsToSelect) {
@@ -34,10 +34,13 @@ async function getNextWord(data: IData, sequence: string[], maxChainLength: numb
         chainLength = await GetChainLength(data, sequence, chainLength, minChainLength, minWordsToSelect);
     }
 
-    return await data.Get(JoinWords(GetEndSequence(sequence, chainLength)));
+    return await data.Get(Strings.JoinWords(Arrays.GetEndSequence(sequence, chainLength)));
 }
 
 export async function Generate(data: IData): Promise<string> {
+    // Set up any data we need for generating
+    await data.Connect();
+
     // 1. We need to pick a starting key.
     // 2. Until we reach a certain number of words, sequences, or we end up looping; generate a new word.
     //      - We want a certain number of options available, and if we don't reach that number, we perform backoff.
@@ -72,5 +75,9 @@ export async function Generate(data: IData): Promise<string> {
         sequence.push(nextWord);
     }
 
-    return JoinWords(sequence);
+    // Free up any data after the process completes
+    await data.Disconnect();
+
+    // Return the result
+    return Strings.JoinWords(sequence);
 }

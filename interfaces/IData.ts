@@ -21,4 +21,7 @@ export interface IData {
 
     GetStartKey(): Promise<string>;
     AddStartingKey(key: string): Promise<void>;
+
+    Connect(): Promise<void>;
+    Disconnect(): Promise<void>;
 }

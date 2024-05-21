@@ -12,8 +12,8 @@
 
 
 import { IData } from "../../interfaces";
-import { JoinWords, SplitSentences, SplitWords } from "../Helpers";
 import { Backoff, MaxChainLength } from "../../Configuration.json";
+import { Strings } from "../Helpers";
 
 // Adds the sequence to our data set.
 // Given the index of the new word to add, the total number of words that builds up a single sequence, and whether or not to apply backoff.
@@ -35,7 +35,7 @@ async function addToData(data: IData, sequence: string[], index: number, maxChai
     let totalSequence = sequence.slice(Math.max(0, index - maxChainLength), index);
     let nextWord = sequence[index];
 
-    await data.Add(JoinWords(totalSequence), nextWord);
+    await data.Add(Strings.JoinWords(totalSequence), nextWord);
 
     // If we're performing backoff, shorten the string
     if (backoff) {
@@ -45,7 +45,11 @@ async function addToData(data: IData, sequence: string[], index: number, maxChai
 
 // Performs the training, given a set to train against.
 export async function Train(data: IData, trainingSet: string) {
-    const sequences = SplitSentences(trainingSet);
+    // Set up data to be ready for training
+    await data.Connect();
+
+    // Separate our input set into separate strings of sentences
+    const sequences = Strings.SplitSentences(trainingSet);
 
     // The number of words that builds up a single sequence.
     const maxChainLength = MaxChainLength;
@@ -58,7 +62,7 @@ export async function Train(data: IData, trainingSet: string) {
     await Promise.all(sequences.map(sequence => {
         return new Promise<void>(async (fulfill) => {
             // Split the sequence into separate words
-            let words = SplitWords(sequence);
+            let words = Strings.SplitWords(sequence);
 
             // The first word can be used to start a new sequence.
             data.AddStartingKey(words[0]);
@@ -72,4 +76,7 @@ export async function Train(data: IData, trainingSet: string) {
             fulfill();
         });
     }))
+
+    // Can now clean up the memory used for the data
+    await data.Disconnect();
 }

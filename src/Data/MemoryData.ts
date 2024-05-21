@@ -3,8 +3,9 @@
 */
 
 import { IData } from "../../interfaces";
+import { Arrays } from "../Helpers"
 
-export class DataList implements IData {
+export class MemoryData implements IData {
     protected _list: Map<string, string[]>;
     protected _startingKeys: Map<string, number>;
     
@@ -12,20 +13,12 @@ export class DataList implements IData {
         this._list = new Map<string, string[]>();
         this._startingKeys = new Map<string, number>();
     }
-    GetCount(sequence: string): Promise<number> {
-        return Promise.resolve(this._list.has(sequence) ? this._list.get(sequence).length : 0);
+    async GetCount(sequence: string): Promise<number> {
+        return this._list.has(sequence) ? this._list.get(sequence).length : 0;
     }
-    Get(sequence: string): Promise<string | undefined> {
+    async Get(sequence: string): Promise<string | undefined> {
         let results = this._list.get(sequence);
-    
-        // If there is no next word for this sequence, return nothing.
-        if (!results) {
-            return undefined;
-        }
-    
-        // Otherwise, we can pick a random word from our list.
-        // NOTE: We may want to fix this later with probabilities instead, to save memory.
-        return Promise.resolve(results[Math.floor(Math.random() * results.length)]);
+        return Arrays.GetRandom(results);
     }
     Add(sequence: string, next: string): Promise<void> {
         const list = this._list;
@@ -81,4 +74,7 @@ export class DataList implements IData {
 
         return;
     }
+
+    async Connect(): Promise<void> { }
+    async Disconnect(): Promise<void> { }
 }

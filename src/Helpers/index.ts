@@ -1,2 +1,2 @@
-export * from "./Arrays"
-export * from "./Strings"
+export * as Arrays from "./Arrays"
+export * as Strings from "./Strings"
