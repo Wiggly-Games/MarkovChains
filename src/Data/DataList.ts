@@ -81,4 +81,10 @@ export class DataList implements IData {
 
         return;
     }
+
+    // Connects to the file system to load the memory data.
+    async Connect() { }
+
+    // Disconnects from the file system, stores the data from memory to file, and closes the lists.
+    async Disconnect() { }
 }

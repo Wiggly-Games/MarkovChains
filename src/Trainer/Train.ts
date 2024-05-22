@@ -45,6 +45,10 @@ async function addToData(data: IData, sequence: string[], index: number, maxChai
 
 // Performs the training, given a set to train against.
 export async function Train(data: IData, trainingSet: string) {
+    // Start off by connecting to the file system.
+    data.Connect();
+
+    // Split up our sequences into separate sentences to be trained against.
     const sequences = SplitSentences(trainingSet);
 
     // The number of words that builds up a single sequence.
@@ -61,7 +65,7 @@ export async function Train(data: IData, trainingSet: string) {
             let words = SplitWords(sequence);
 
             // The first word can be used to start a new sequence.
-            data.AddStartingKey(words[0]);
+            await data.AddStartingKey(words[0]);
 
             // Go through every word to add it to our chain.
             for (let i = 1; i < words.length; i++) {
@@ -71,5 +75,8 @@ export async function Train(data: IData, trainingSet: string) {
 
             fulfill();
         });
-    }))
+    }));
+
+    // Disconnect, save everything to file, clean up memory.
+    await data.Disconnect();
 }
