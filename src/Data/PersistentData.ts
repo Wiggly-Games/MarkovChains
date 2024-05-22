@@ -1,3 +1,9 @@
+/*
+    The PersistentData class implements a Markov Chain using a database, instead of wrapping it in memory.
+    This allows the system to prioritize saving memory, at the cost of taking longer to train and generate.
+*/
+
+
 import { IData } from "../../interfaces";
 import * as sqlite from 'sqlite'
 import * as sqlite3 from "sqlite3";
