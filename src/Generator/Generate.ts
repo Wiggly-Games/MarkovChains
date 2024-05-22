@@ -39,7 +39,7 @@ async function getNextWord(data: IData, sequence: string[], maxChainLength: numb
 
 export async function Generate(data: IData): Promise<string> {
     // Load in the data from the file system.
-    data.Connect();
+    await data.Connect();
 
     // 1. We need to pick a starting key.
     // 2. Until we reach a certain number of words, sequences, or we end up looping; generate a new word.
@@ -76,7 +76,7 @@ export async function Generate(data: IData): Promise<string> {
     }
 
     // Disconnect, freeing up memory used for our data set.
-    data.Disconnect();
+    await data.Disconnect();
 
     // Return our result
     return JoinWords(sequence);

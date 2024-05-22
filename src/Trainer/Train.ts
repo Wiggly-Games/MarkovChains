@@ -46,7 +46,7 @@ async function addToData(data: IData, sequence: string[], index: number, maxChai
 // Performs the training, given a set to train against.
 export async function Train(data: IData, trainingSet: string) {
     // Start off by connecting to the file system.
-    data.Connect();
+    await data.Connect();
 
     // Split up our sequences into separate sentences to be trained against.
     const sequences = SplitSentences(trainingSet);
