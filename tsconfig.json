@@ -4,8 +4,7 @@
         "module": "CommonJS",
         "outDir": "build",
         "removeComments": true,
-        "resolveJsonModule": true,
-        "declaration": true
+        "resolveJsonModule": true
     },
     "exclude": ["node_modules"]
 }

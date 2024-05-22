@@ -3,14 +3,26 @@
 */
 
 import { IData } from "../../interfaces";
+import * as Files from "../Files";
+import { LoadWithMaps, SaveWithMaps } from "../Helpers/Json";
 
 export class DataList implements IData {
     protected _list: Map<string, string[]>;
     protected _startingKeys: Map<string, number>;
     
-    constructor() {
+    protected _paths: {
+        StartingKeys: string;
+        Data: string;
+    }
+
+    constructor(path: string) {
         this._list = new Map<string, string[]>();
         this._startingKeys = new Map<string, number>();
+
+        this._paths = {
+            StartingKeys: `${path}\\StartingKeys.json`,
+            Data: `${path}\\Data.json`
+        }
     }
     GetCount(sequence: string): Promise<number> {
         return Promise.resolve(this._list.has(sequence) ? this._list.get(sequence).length : 0);
@@ -80,5 +92,29 @@ export class DataList implements IData {
         }
 
         return;
+    }
+
+    // Connects to the file system to load the memory data.
+    async Connect() {
+        const startingKeys = await Files.LoadJson(this._paths.StartingKeys, LoadWithMaps);
+        const dataList = await Files.LoadJson(this._paths.Data, LoadWithMaps);
+
+        if (startingKeys !== undefined && dataList !== undefined) {
+            this._startingKeys = startingKeys;
+            this._list = dataList;
+        } else if (startingKeys !== undefined || dataList !== undefined) {
+            console.warn(`Found one file, but could not find the other. Failed to load Memory List from file.`);
+        }
+    }
+
+    // Disconnects from the file system, stores the data from memory to file, and closes the lists.
+    async Disconnect() {
+        // Write the data to file
+        await Files.Overwrite(this._paths.StartingKeys, JSON.stringify(this._startingKeys, SaveWithMaps));
+        await Files.Overwrite(this._paths.Data, JSON.stringify(this._list, SaveWithMaps));
+
+        // Clear memory used for the two maps
+        this._startingKeys.clear();
+        this._list.clear();
     }
 }

@@ -7,8 +7,8 @@ import { DataList, Generate, Train } from "./src";
 
 export class MarkovChain implements IMarkovChain {
     _chain: IData;
-    constructor() {
-        this._chain = new DataList();
+    constructor(path: string) {
+        this._chain = new DataList(path);
     }
     async Train(data: string) {
         await Train(this._chain, data);

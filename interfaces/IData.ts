@@ -12,6 +12,10 @@
         Get(sequence: string): string | undefined -> Returns the next word that can be built from the preceding sequence, 
          or undefined if no words can be found from the sequence.
         GetCount(sequence: string): number -> Returns the number of words that can be linked from the preceding sequence.
+
+    For Persistence:
+        Connect(): Connects to file to load in data.
+        Disconnect(): Disconnects, cleans up memory use, and saves everything to file.
 */
 
 export interface IData {
@@ -21,4 +25,8 @@ export interface IData {
 
     GetStartKey(): Promise<string>;
     AddStartingKey(key: string): Promise<void>;
+
+    // Connects/Disconnects from file system for persistent data storage.
+    Connect(): Promise<void>;
+    Disconnect(): Promise<void>;
 }
