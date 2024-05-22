@@ -92,28 +92,4 @@ export class DataList implements IData  {
         this._startingKeys = undefined;
         this._list = undefined;
     }
-
-    // Connects to the file system to load the memory data.
-    async Connect() {
-        const startingKeys = await Files.LoadJson(this._paths.StartingKeys, LoadWithMaps);
-        const dataList = await Files.LoadJson(this._paths.Data, LoadWithMaps);
-
-        if (startingKeys !== undefined && dataList !== undefined) {
-            this._startingKeys = startingKeys;
-            this._list = dataList;
-        } else if (startingKeys !== undefined || dataList !== undefined) {
-            console.warn(`Found one file, but could not find the other. Failed to load Memory List from file.`);
-        }
-    }
-
-    // Disconnects from the file system, stores the data from memory to file, and closes the lists.
-    async Disconnect() {
-        // Write the data to file
-        await Files.Overwrite(this._paths.StartingKeys, JSON.stringify(this._startingKeys, SaveWithMaps));
-        await Files.Overwrite(this._paths.Data, JSON.stringify(this._list, SaveWithMaps));
-
-        // Clear memory used for the two maps
-        this._startingKeys.clear();
-        this._list.clear();
-    }
 }
