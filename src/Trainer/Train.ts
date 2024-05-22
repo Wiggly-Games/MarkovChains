@@ -65,7 +65,7 @@ export async function Train(data: IData, trainingSet: string) {
             let words = Strings.SplitWords(sequence);
 
             // The first word can be used to start a new sequence.
-            data.AddStartingKey(words[0]);
+            await data.AddStartingKey(words[0]);
 
             // Go through every word to add it to our chain.
             for (let i = 1; i < words.length; i++) {

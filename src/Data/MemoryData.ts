@@ -33,33 +33,8 @@ export class MemoryData implements IData {
         return;
     }
     GetStartKey(): Promise<string> {
-        const startingKeys = this._startingKeys;
-
-        // This function returns a random word from our list of starting keys, using the probability of each word of occuring.
-        // See: "notes.ts" for more about the logic here.
-        
-        // 1. We need to create a list of all the keys that we've seen with their probabilities of occurring.
-        let counter = 0;
-        let list = [ ];
-        for (const [key, numberSeen] of startingKeys.entries()){
-            counter += numberSeen;
-            list.push({
-                size: counter,
-                key: key
-            });
-        }
-    
-        // 2. Pick a random number from 0 - Counter-1
-        let rand = Math.floor(Math.random() * counter)
-    
-        // Walk through the list until we find the first key where size > our random number.
-        let index = 0;
-        while (index < list.length && list[index].size <= rand) {
-            index ++;
-        }
-    
-        // Return the element at this index.
-        return index >= list.length ? undefined : list[index].key;
+        const startingKeys = Object.entries(this._startingKeys);
+        return Arrays.GetRandomFromProbabilities(startingKeys, (x)=>x[1])?.at(0);
     }
     AddStartingKey(key: string): Promise<void> {
         const startingKeys = this._startingKeys;

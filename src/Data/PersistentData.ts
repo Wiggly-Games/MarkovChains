@@ -16,8 +16,8 @@ export class PersistentData implements IData {
         GetNext: Statement;
 
         GetStartCount: Statement;
-        AddStartKey: Statement;
         UpdateStartKey: Statement;
+        GetAllKeys: Statement;
     }
 
     constructor(path: string) {
@@ -37,16 +37,13 @@ export class PersistentData implements IData {
         await this._queries.Insert.run(sequence, next);
     }
     async GetStartKey(): Promise<string> {
-        return "";
+        const keys = await this._queries.GetAllKeys.all() as ({Key: string, SeenCount: number})[];
+        const result = Arrays.GetRandomFromProbabilities(keys, (key) => key.SeenCount);
+        return result?.Key;
     }
-    async AddStartingKey(key: string): Promise<void> {
-        let currentValue = await this._queries.GetStartCount.get(key);
 
-        if (currentValue) {
-            await this._queries.UpdateStartKey.run(key, currentValue + 1);
-        } else {
-            await this._queries.AddStartKey.run(key, 1);
-        }
+    async AddStartingKey(key: string): Promise<void> {
+        await this._queries.UpdateStartKey.run(key);
     }
 
     // Connects to the database.
@@ -71,12 +68,14 @@ export class PersistentData implements IData {
         // Prepare the queries
         this._queries = {
             Insert: await db.prepare(`INSERT INTO Transitions (CurrentSet, NextValue) VALUES (?, ?)`),
-            GetCount: await db.prepare(`SELECT COUNT(1) FROM Transitions WHERE CurrentSet = '?'`),
-            GetNext: await db.prepare(`SELECT NextValue FROM Transitions WHERE CurrentSet = '?'`),
+            GetCount: await db.prepare(`SELECT COUNT(1) FROM Transitions WHERE CurrentSet = ?`),
+            GetNext: await db.prepare(`SELECT NextValue FROM Transitions WHERE CurrentSet = ?`),
 
-            GetStartCount: await db.prepare(`SELECT SeenCount FROM StartKeys WHERE KEY = '?'`),
-            AddStartKey: await db.prepare(`INSERT INTO StartKeys (Key, SeenCount) VALUES ('?', ?)`),
-            UpdateStartKey: await db.prepare(`UPDATE StartKeys SET SeenCount = ? WHERE Key = '?'`)
+            GetStartCount: await db.prepare(`SELECT SeenCount FROM StartKeys WHERE KEY = ?`),
+            UpdateStartKey: await db.prepare(`
+                INSERT INTO StartKeys (Key, SeenCount) VALUES (?, ?) ON CONFLICT(Key) DO UPDATE SET SeenCount=SeenCount + 1
+            `),
+            GetAllKeys: await db.prepare(`SELECT Key,SeenCount FROM StartKeys`)
         }
         
         this._database = db;
