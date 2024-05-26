@@ -16,16 +16,18 @@ export class DataList implements IData  {
         Data: string;
     }
 
-    constructor(path: string, getProbabilityMap: (data?: Map<any, number>)=>IProbabilityMap<string>) {
+    constructor(getProbabilityMap: (data?: Map<any, number>)=>IProbabilityMap<string>) {
         this._list = undefined;
         this._startingKeys = undefined;
         this._getProbabilityMap = getProbabilityMap;
-
+    }
+    SetPaths(path: string) {
         this._paths = {
             StartingKeys: `${path}\\StartingKeys.json`,
             Data: `${path}\\Data.json`
         }
     }
+
     GetCount(sequence: string): Promise<number> {
         return Promise.resolve(this._list.has(sequence) ? this._list.get(sequence).GetCount() : 0);
     }
@@ -60,6 +62,7 @@ export class DataList implements IData  {
 
     // Connects to the file system to load the memory data.
     async Connect() {
+        console.assert(this._paths !== undefined, "Chain failed to connect; no paths specified.");
         const startingKeys = await Files.LoadJson(this._paths.StartingKeys, LoadWithProbabilityMap(this._getProbabilityMap));
         const dataList = await Files.LoadJson(this._paths.Data, LoadWithProbabilityMap(this._getProbabilityMap));
 
@@ -78,6 +81,8 @@ export class DataList implements IData  {
 
     // Disconnects from the file system, stores the data from memory to file, and closes the lists.
     async Disconnect() {
+        console.assert(this._paths !== undefined, "Chain failed to disconnect; could not find output path.");
+
         // Write the data to file
         await Files.Overwrite(this._paths.StartingKeys, JSON.stringify(this._startingKeys, SaveWithMaps));
         await Files.Overwrite(this._paths.Data, JSON.stringify(this._list, SaveWithMaps));

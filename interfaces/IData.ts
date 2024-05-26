@@ -14,6 +14,7 @@
         GetCount(sequence: string): number -> Returns the number of words that can be linked from the preceding sequence.
 
     For Persistence:
+        SetPaths(path: string): Sets a folder directory where will be loaded/unloaded from.
         Connect(): Connects to file to load in data.
         Disconnect(): Disconnects, cleans up memory use, and saves everything to file.
 */
@@ -26,7 +27,7 @@ export interface IData {
     GetStartKey(): Promise<string>;
     AddStartingKey(key: string): Promise<void>;
 
-    // Connects/Disconnects from file system for persistent data storage.
+    SetPaths(path: string): void;
     Connect(): Promise<void>;
     Disconnect(): Promise<void>;
 }
