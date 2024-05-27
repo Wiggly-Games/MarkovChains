@@ -5,7 +5,7 @@ import * as TestData from "./TestData/WeirdAl.json"
     const path = require.main.path + "\\Static";
 
     const chain = new MarkovChain();
-    //await chain.Train(TestData.join("\n"), path + "2")
+    await chain.Train(TestData.join("\n"), path)
     
     for (let i = 0; i < 100; i++) {
         console.log(await chain.Generate(path));
