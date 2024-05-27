@@ -2,24 +2,25 @@
     DataList implements IData into a simple list within memory.
 */
 
-import { IData, IProbabilityMap } from "../../interfaces";
-import * as Files from "../Files";
-import { LoadWithProbabilityMap, SaveWithMaps } from "../Helpers";
+import { IData } from "../../interfaces";
+import * as Files from "@wiggly-games/files";
+import { LoadWithObjects, SaveWithObjects } from "../Helpers";
+import { IBag } from "@wiggly-games/data-structures";
 
 export class DataList implements IData  {
-    protected _list: Map<string, IProbabilityMap<string>>;
-    protected _startingKeys: IProbabilityMap<string>;
-    protected _getProbabilityMap: ()=>IProbabilityMap<string>;
+    protected _list: Map<string, IBag<string>>;
+    protected _startingKeys: IBag<string>;
+    protected _getBag: ()=>IBag<string>;
   
     protected _paths: {
         StartingKeys: string;
         Data: string;
     }
 
-    constructor(getProbabilityMap: (data?: Map<any, number>)=>IProbabilityMap<string>) {
+    constructor(getBag: (data?: Map<any, number>)=>IBag<string>) {
         this._list = undefined;
         this._startingKeys = undefined;
-        this._getProbabilityMap = getProbabilityMap;
+        this._getBag = getBag;
     }
     SetPaths(path: string) {
         this._paths = {
@@ -29,7 +30,7 @@ export class DataList implements IData  {
     }
 
     GetCount(sequence: string): Promise<number> {
-        return Promise.resolve(this._list.has(sequence) ? this._list.get(sequence).GetCount() : 0);
+        return Promise.resolve(this._list.has(sequence) ? this._list.get(sequence).CountContents() : 0);
     }
     async Get(sequence: string): Promise<string | undefined> {
         let results = this._list.get(sequence);
@@ -39,14 +40,14 @@ export class DataList implements IData  {
             return undefined;
         }
         
-        return results.GetRandom();
+        return results.Pull();
     }
     Add(sequence: string, next: string): Promise<void> {
         const list = this._list;
 
         // If we haven't already seen this sequence, start a new list.
         if (!list.has(sequence)) {
-            list.set(sequence, this._getProbabilityMap());
+            list.set(sequence, this._getBag());
         }
 
         list.get(sequence).Add(next);
@@ -54,7 +55,7 @@ export class DataList implements IData  {
         return;
     }
     async GetStartKey(): Promise<string> {
-        return this._startingKeys.GetRandom();
+        return this._startingKeys.Pull();
     }
     async AddStartingKey(key: string): Promise<void> {
         this._startingKeys.Add(key);
@@ -63,8 +64,8 @@ export class DataList implements IData  {
     // Connects to the file system to load the memory data.
     async Connect() {
         console.assert(this._paths !== undefined, "Chain failed to connect; no paths specified.");
-        const startingKeys = await Files.LoadJson(this._paths.StartingKeys, LoadWithProbabilityMap(this._getProbabilityMap));
-        const dataList = await Files.LoadJson(this._paths.Data, LoadWithProbabilityMap(this._getProbabilityMap));
+        const startingKeys = await Files.LoadJson(this._paths.StartingKeys, LoadWithObjects(this._getBag));
+        const dataList = await Files.LoadJson(this._paths.Data, LoadWithObjects(this._getBag));
 
         if (startingKeys !== undefined && dataList !== undefined) {
             this._startingKeys = startingKeys;
@@ -74,8 +75,8 @@ export class DataList implements IData  {
         }
 
         if (!startingKeys || !dataList) {
-            this._startingKeys = this._getProbabilityMap();
-            this._list = new Map<string, IProbabilityMap<string>>();
+            this._startingKeys = this._getBag();
+            this._list = new Map<string, IBag<string>>();
         }
     }
 
@@ -84,8 +85,8 @@ export class DataList implements IData  {
         console.assert(this._paths !== undefined, "Chain failed to disconnect; could not find output path.");
 
         // Write the data to file
-        await Files.Overwrite(this._paths.StartingKeys, JSON.stringify(this._startingKeys, SaveWithMaps));
-        await Files.Overwrite(this._paths.Data, JSON.stringify(this._list, SaveWithMaps));
+        await Files.Overwrite(this._paths.StartingKeys, JSON.stringify(this._startingKeys, SaveWithObjects));
+        await Files.Overwrite(this._paths.Data, JSON.stringify(this._list, SaveWithObjects));
 
         // Clear memory used for the two maps
         this._startingKeys.Clear();

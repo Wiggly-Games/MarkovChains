@@ -3,14 +3,15 @@
 */
 
 import { IData, IMarkovChain } from "./interfaces";
-import { DataList, Generate, Train, CreateDirectory } from "./src";
-import { ProbabilityMap } from "./src";
+import { DataList, Generate, Train } from "./src";
+import { CreateDirectory } from "@wiggly-games/files";
+import { Bag } from "@wiggly-games/data-structures";
 
 export class MarkovChain implements IMarkovChain {
     _chain: IData;
     constructor() {
         // Create the data list
-        this._chain = new DataList((data?: Map<any, number>)=>new ProbabilityMap(data));
+        this._chain = new DataList((data?: Map<any, number>)=>new Bag(data));
     }
     async Train(data: string, outputPath: string) {
         this.SetPaths(outputPath);

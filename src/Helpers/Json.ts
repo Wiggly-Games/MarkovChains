@@ -1,18 +1,21 @@
 // Note: Copied from StackOverflow, https://stackoverflow.com/questions/29085197/how-do-you-json-stringify-an-es6-map
+import { IBag } from "@wiggly-games/data-structures";
 
-import { IProbabilityMap, IsProbabilityMap } from "../../interfaces";
+function IsBag(t: unknown) {
+    return t instanceof Object && "IsBag" in (t as any);
+}
 
 // Updates JSON stringify to stringify maps.
-export function SaveWithMaps(key, value) {
+export function SaveWithObjects(key, value) {
     if (value instanceof Map) {
         return {
             dataType: 'Map',
             value: Array.from(value.entries())
         }
-    } else if (IsProbabilityMap(value)) {
+    } else if (IsBag(value)) {
         return {
-            dataType: 'ProbabilityMap',
-            value: Array.from(value.GetMap().entries())
+            dataType: 'Bag',
+            value: Array.from(value.ConvertToMap().entries())
         }
     } else {
         return value;
@@ -21,13 +24,13 @@ export function SaveWithMaps(key, value) {
 
 // Loads JSON, includes reading in maps & probability maps.
 // Outer function requires the function to create a new probability map, then returns a function that can be passed into JSON.parse.
-export function LoadWithProbabilityMap(getProbabilityMap: (data?: Map<any, number>)=>IProbabilityMap<any>) {
-    return function (key, value) {
+export function LoadWithObjects(getBag: (data?: Map<any, number>)=>IBag<any>) {
+    return function (_, value) {
         if(typeof value === 'object' && value !== null) {
             if (value.dataType === 'Map') {
                 return new Map(value.value);
-            } else if (value.dataType === 'ProbabilityMap') {
-                return getProbabilityMap(value.value);
+            } else if (value.dataType === 'Bag') {
+                return getBag(value.value);
             }
         }
         return value;
