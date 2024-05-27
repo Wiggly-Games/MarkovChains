@@ -1,6 +1,6 @@
 {
     "name": "@wiggly-games/markov-chains",
-    "version": "2.1.0",
+    "version": "2.1.1",
     "description": "",
     "main": "main.js",
     "types": "main.d.ts",
@@ -11,6 +11,8 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
+      "@wiggly-games/data-structures": "^1.0.1",
+      "@wiggly-games/files": "^1.0.3"
     }
   }
   
