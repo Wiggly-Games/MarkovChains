@@ -15,6 +15,8 @@
 
     For Persistence:
         SetPaths(path: string): Sets a folder directory where will be loaded/unloaded from.
+        GetPaths(): Gets the folder directory where content is being loaded/unloaded from.
+        
         Connect(): Connects to file to load in data.
         Disconnect(): Disconnects, cleans up memory use, and saves everything to file.
 */
@@ -28,6 +30,8 @@ export interface IData {
     AddStartingKey(key: string): Promise<void>;
 
     SetPaths(path: string): void;
+    GetPaths(): string;
+
     Connect(): Promise<void>;
     Disconnect(): Promise<void>;
 }
