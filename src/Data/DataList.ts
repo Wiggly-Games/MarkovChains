@@ -133,6 +133,12 @@ export class DataList implements IData  {
         this._isConnected = false;
     }
 
+    // Saves the latest chain data into a file.
+    async Save() {
+        this.SaveToFile();
+        this._hasChanged = false;
+    }
+
     // Saves the chain's data to a file.
     protected async SaveToFile(){
         console.assert(this._paths !== undefined, "Failed to save to file because no path was specified.");

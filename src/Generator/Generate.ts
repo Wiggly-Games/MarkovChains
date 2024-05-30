@@ -75,9 +75,6 @@ export async function Generate(data: IData): Promise<string> {
         sequence.push(nextWord);
     }
 
-    // Disconnect, freeing up memory used for our data set.
-    await data.Disconnect();
-
     // Return our result
     return JoinWords(sequence);
 }

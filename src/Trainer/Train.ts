@@ -77,6 +77,5 @@ export async function Train(data: IData, trainingSet: string) {
         });
     }));
 
-    // Disconnect, save everything to file, clean up memory.
-    await data.Disconnect();
+    await data.Save();
 }

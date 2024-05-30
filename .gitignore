@@ -1,6 +1,7 @@
 node_modules/
 build/*
 build.zip
+TestData/Wiggles.json
 
 # Keep the build/package.json file - this allows us to use npm run
 !build/package.json
