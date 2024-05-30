@@ -19,6 +19,7 @@
         
         Connect(): Connects to file to load in data.
         Disconnect(): Disconnects, cleans up memory use, and saves everything to file.
+        Save(): Saves everything to file, without removing the data from memory.
 */
 
 export interface IData {
@@ -34,4 +35,5 @@ export interface IData {
 
     Connect(): Promise<void>;
     Disconnect(): Promise<void>;
+    Save(): Promise<void>;
 }

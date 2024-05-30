@@ -1,6 +1,6 @@
 {
     "name": "@wiggly-games/markov-chains",
-    "version": "2.1.2",
+    "version": "2.1.3",
     "description": "",
     "main": "build/main.js",
     "types": "build/main.d.ts",
