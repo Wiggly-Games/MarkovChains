@@ -22,6 +22,14 @@ export class MarkovChain implements IMarkovChain {
         return await Generate(this._chain);
     }
 
+    async Load(inputPath: string){
+        this.SetPaths(inputPath);
+        await this._chain.Load();
+    }
+    async Save(){
+        await this._chain.Save();
+    }
+
     // Sets the path to the folder to be used for persistent storage within the chain.
     protected SetPaths(path: string) {
         // If the directory doesn't already exist, create a new one
