@@ -32,7 +32,6 @@ export interface IData {
     GetStartKey(): Promise<string>;
     AddStartingKey(key: string): Promise<void>;
 
-    SetPaths(path: string): void;
     GetPaths(): string;
 
     Connect(): Promise<void>;

@@ -1,4 +1,3 @@
-import { Generator, MaxChainLength, Backoff } from "../../Configuration.json";
 import { IData } from "../../interfaces";
 import { GetEndSequence, JoinWords } from "../Helpers";
 
@@ -24,7 +23,7 @@ async function GetChainLength(data: IData, sequence: string[], chainLength: numb
 
 // Retrieves a word based on the preceding sequence, while performing backoff.
 async function getNextWord(data: IData, sequence: string[], maxChainLength: number, minChainLength: number,
-    backoff: boolean, minWordsToSelect: number): Promise<string | undefined>
+    backoff: boolean, minWordsToSelect: number, stopAtFewerOptions: boolean): Promise<string | undefined>
 {
     // If we're performing backoff, get the chain length. Otherwise, it gets set to maxChainLength.
     let chainLength = Math.min(sequence.length, maxChainLength);
@@ -34,21 +33,20 @@ async function getNextWord(data: IData, sequence: string[], maxChainLength: numb
         chainLength = await GetChainLength(data, sequence, chainLength, minChainLength, minWordsToSelect);
     }
 
+    if (stopAtFewerOptions) {
+        const options = await data.GetCount(JoinWords(GetEndSequence(sequence, chainLength)));
+        if (options < minWordsToSelect) {
+            return undefined;
+        }   
+    }
+
     return await data.Get(JoinWords(GetEndSequence(sequence, chainLength)));
 }
 
-export async function Generate(data: IData): Promise<string> {
-    // Load in the data from the file system.
-    await data.Connect();
-
+export async function Generate(data: IData, {WordCount, MinRequiredOptions, Backoff, MinBackoffLength, TrainingLength, StopAtFewerOptions}): Promise<string> {
     // 1. We need to pick a starting key.
     // 2. Until we reach a certain number of words, sequences, or we end up looping; generate a new word.
     //      - We want a certain number of options available, and if we don't reach that number, we perform backoff.
-    const NumWordsToGenerate = Generator.WordCount;
-    const PerformBackoff = Backoff;
-    const MinWordsToSelectFrom = Generator.MinWordsToSelectFrom;
-    const maxChainLength = MaxChainLength;
-    const minChainLength = Generator.MinChainLength;
 
     // Get a starting key
     const sequence = [ ];
@@ -63,8 +61,8 @@ export async function Generate(data: IData): Promise<string> {
     sequence.push(startWord);
 
     // Generate words
-    while (sequence.length < NumWordsToGenerate) {
-        const nextWord = await getNextWord(data, sequence, maxChainLength, minChainLength, PerformBackoff, MinWordsToSelectFrom);
+    while (sequence.length < WordCount) {
+        const nextWord = await getNextWord(data, sequence, TrainingLength, MinBackoffLength, Backoff, MinRequiredOptions, StopAtFewerOptions);
         
         // If we didn't find any words, exit here
         if (nextWord === undefined) {

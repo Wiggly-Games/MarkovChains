@@ -21,17 +21,16 @@ export class DataList implements IData  {
     protected _connectedPath: string;
     protected _isConnected: boolean;
 
-    constructor(getBag: (data?: Map<any, number>)=>IBag<string>) {
+    constructor(path: string, getBag: (data?: Map<any, number>)=>IBag<string>) {
         this._getBag = getBag;
         this._isConnected = false;
         this._initializeDataList();
-    }
-    SetPaths(path: string) {
+
         this._paths = {
             StartingKeys: `${path}\\StartingKeys.json`,
             Data: `${path}\\Data.json`,
             Root: path
-        }
+        }        
     }
     GetPaths(): string {
         return this._paths.Root;

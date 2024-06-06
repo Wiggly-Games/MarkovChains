@@ -6,36 +6,30 @@ import { IData, IMarkovChain } from "./interfaces";
 import { DataList, Generate, Train } from "./src";
 import { CreateDirectory } from "@wiggly-games/files";
 import { Bag } from "@wiggly-games/data-structures";
+import { TConfiguration } from "./src/Types/TConfiguration";
 
 export class MarkovChain implements IMarkovChain {
     _chain: IData;
-    constructor() {
+    _configuration: TConfiguration;
+    constructor(inputPath: string, configuration: TConfiguration) {
+        // If the directory doesn't already exist, create a new one
+        CreateDirectory(inputPath);
+
         // Create the data list
-        this._chain = new DataList((data?: Map<any, number>)=>new Bag(data));
+        this._chain = new DataList(inputPath, (data?: Map<any, number>)=>new Bag(data));
+        this._configuration = configuration;
     }
-    async Train(data: string, outputPath: string) {
-        this.SetPaths(outputPath);
-        await Train(this._chain, data);
+    async Train(data: string) {
+        await Train(this._chain, data, this._configuration);
     }
-    async Generate(inputPath: string): Promise<string> {
-        this.SetPaths(inputPath);
-        return await Generate(this._chain);
+    async Generate(): Promise<string> {
+        return await Generate(this._chain, this._configuration);
     }
 
-    async Load(inputPath: string){
-        this.SetPaths(inputPath);
+    async Load(){
         await this._chain.Load();
     }
     async Save(){
         await this._chain.Save();
-    }
-
-    // Sets the path to the folder to be used for persistent storage within the chain.
-    protected SetPaths(path: string) {
-        // If the directory doesn't already exist, create a new one
-        CreateDirectory(path);
-
-        // Set the path to be used by the chain
-        this._chain.SetPaths(path);
     }
 }
