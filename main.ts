@@ -3,10 +3,12 @@
 */
 
 import { IData, IMarkovChain } from "./interfaces";
-import { DataList, Generate, Train } from "./src";
+import { DataList, Generate, Train, TConfiguration } from "./src";
 import { CreateDirectory } from "@wiggly-games/files";
 import { Bag } from "@wiggly-games/data-structures";
 import { TConfiguration } from "./src/Types/TConfiguration";
+
+export { TConfiguration as ChainConfiguration } from "./src";
 
 export class MarkovChain implements IMarkovChain {
     _chain: IData;
