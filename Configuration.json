@@ -3,9 +3,6 @@
         "Directory": "Logs\\LogFiles",
         "Database": "Database.log"
     },
-    "Paths": {
-        "Database": "Static/Database.db"
-    },
     "Generator": {
         "WordCount": 50,
         "MinWordsToSelectFrom": 3,

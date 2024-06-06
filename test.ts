@@ -4,10 +4,20 @@ import * as TestData from "./TestData/WeirdAl.json"
 (async () => {
     const path = require.main.path + "\\Static";
 
-    const chain = new MarkovChain();
-    await chain.Train(TestData.join("\n"), path)
+    const chain = new MarkovChain(path, {
+        WordCount: 50,
+        Backoff: true,
+        MinBackoffLength: 2,
+        TrainingLength: 5,
+        MinRequiredOptions: 3,
+        StopAtFewerOptions: true
+    });
+
+    //await chain.Train(TestData.join("\n"));
+    //await chain.Save();
     
+    await chain.Load();
     for (let i = 0; i < 100; i++) {
-        console.log(await chain.Generate(path));
+        console.log(await chain.Generate());
     }
 })()

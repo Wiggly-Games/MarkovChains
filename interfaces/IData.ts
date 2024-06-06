@@ -19,7 +19,9 @@
         
         Connect(): Connects to file to load in data.
         Disconnect(): Disconnects, cleans up memory use, and saves everything to file.
+
         Save(): Saves everything to file, without removing the data from memory.
+        Load(): Loads the data from a file, allowing it to be used for generating chains.
 */
 
 export interface IData {
@@ -30,10 +32,11 @@ export interface IData {
     GetStartKey(): Promise<string>;
     AddStartingKey(key: string): Promise<void>;
 
-    SetPaths(path: string): void;
     GetPaths(): string;
 
     Connect(): Promise<void>;
     Disconnect(): Promise<void>;
+
     Save(): Promise<void>;
+    Load(): Promise<void>;
 }

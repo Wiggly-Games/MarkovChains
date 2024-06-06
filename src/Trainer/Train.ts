@@ -13,7 +13,6 @@
 
 import { IData } from "../../interfaces";
 import { JoinWords, SplitSentences, SplitWords } from "../Helpers";
-import { Backoff, MaxChainLength } from "../../Configuration.json";
 
 // Adds the sequence to our data set.
 // Given the index of the new word to add, the total number of words that builds up a single sequence, and whether or not to apply backoff.
@@ -44,18 +43,9 @@ async function addToData(data: IData, sequence: string[], index: number, maxChai
 }
 
 // Performs the training, given a set to train against.
-export async function Train(data: IData, trainingSet: string) {
-    // Start off by connecting to the file system.
-    await data.Connect();
-
+export async function Train(data: IData, trainingSet: string, {TrainingLength, Backoff}) {
     // Split up our sequences into separate sentences to be trained against.
     const sequences = SplitSentences(trainingSet);
-
-    // The number of words that builds up a single sequence.
-    const maxChainLength = MaxChainLength;
-
-    // Whether or not we want to shorten sequences to give a wider variety of options.
-    const backoff = Backoff;
 
     // Create a set of Promises to train against each sequence,
     // Then wait for all the sequences to complete
@@ -70,12 +60,10 @@ export async function Train(data: IData, trainingSet: string) {
             // Go through every word to add it to our chain.
             for (let i = 1; i < words.length; i++) {
                 // From here, we train against the last X words.
-                await addToData(data, words, i, maxChainLength, backoff);
+                await addToData(data, words, i, TrainingLength, Backoff);
             }
 
             fulfill();
         });
     }));
-
-    await data.Save();
 }
