@@ -2,6 +2,8 @@
     Implements helper methods for Strings:
         - Separating a list of strings into sentences, 
         - Separating a sentence into a list of words
+
+    Note: For sentence splitting, regex copied from https://stackoverflow.com/questions/18914629/split-string-into-sentences-in-javascript
 */
 
 import { ClearBlanks } from "./Arrays";
