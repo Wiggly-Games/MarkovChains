@@ -3,7 +3,7 @@
     "version": "3.0.1",
     "description": "",
     "main": "main.js",
-    "types": "main.d.ts",
+    "types": "types/main.d.ts",
     "scripts": {
       "start": "node main.js",
       "test": "node test.js"
