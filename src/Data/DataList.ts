@@ -116,7 +116,7 @@ export class DataList implements IData  {
 
     // Saves the latest chain data into a file.
     async Save() {
-        this.SaveToFile();
+        await this.SaveToFile();
     }
 
     // Saves the chain's data to a file.
