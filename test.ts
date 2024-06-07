@@ -17,11 +17,11 @@ import { CreateDirectory } from "@wiggly-games/files";
         StopAtFewerOptions: false
     });
 
-    await chain.Train((TestData as string[]).join("\n"));
-    await chain.Save();
+    //await chain.Train((TestData as string[]).join("\n"));
+    //await chain.Save();
     
-    /*await chain.Load();
+    await chain.Load();
     for (let i = 0; i < 100; i++) {
         console.log(await chain.Generate());
-    }*/
+    }
 })()
