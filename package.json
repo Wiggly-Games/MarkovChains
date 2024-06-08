@@ -19,7 +19,7 @@
         "@types/node": "latest"
     },
     "dependencies": {
-        "@wiggly-games/data-structures": "^1.0.1",
+        "@wiggly-games/data-structures": "^2.0.0",
         "@wiggly-games/files": "^1.0.3"
     }
 }

@@ -2,7 +2,7 @@
     DataList implements IData into a simple list within memory.
 */
 
-import { IData, IStringify } from "../../interfaces";
+import { IData } from "../../interfaces";
 import * as Files from "@wiggly-games/files";
 import { Bag, IBag } from "@wiggly-games/data-structures";
 import { MarkovChain } from "../../main";
@@ -10,7 +10,6 @@ import { MarkovChain } from "../../main";
 export class DataList implements IData  {
     protected _list: Map<string, IBag<string>>;
     protected _startingKeys: IBag<string>;
-    protected _stringifier: IStringify<IData>;
     protected _getBag: ()=>Bag<string>;
 
     // Constructs a blank DataList.
@@ -20,10 +19,19 @@ export class DataList implements IData  {
     }
 
     // Constructs a new DataList given the StartKeys + Data mapping.
-    static FromData(startKeys: IBag<string>, data: Map<string, IBag<string>>, getBag: ()=>Bag<string>) {
+    static FromData(startKeys: [string, number][], data: [string, IterableIterator<[string, number]>][], getBag: (values?: Iterable<[string, number]>)=>Bag<string>) {
         const dataList = new DataList(getBag);
-        dataList._list = data;
-        dataList._startingKeys = startKeys;
+
+        // Set the starting keys
+        dataList._startingKeys = getBag(startKeys);
+        
+        // Build up the data list
+        const list = new Map<string, IBag<string>>();
+        data.forEach(([key, contents]) => {
+            // Set the bag for every key - this is an array of entries, so we can just pass it directly
+            list.set(key, getBag(contents));
+        });
+        dataList._list = list;
 
         return dataList;
     }
@@ -60,13 +68,18 @@ export class DataList implements IData  {
         this._startingKeys.Add(key);
     }
 
-    GetStartingKeys(): IBag<string> {
-        return this._startingKeys;
+    GetStartingKeys(): [string, number][] {
+        return Array.from(this._startingKeys.Entries());
     }
-    GetData(): Map<string, IBag<string>> {
-        return this._list;
+    GetData(): [string, [string, number][]][] {
+        const lists = [ ];
+        this._list.forEach((value, key) => {
+            lists.push([key, Array.from(value.Entries())]);
+        })
+        return lists;
     }
 
+    
     // Initializes a new, empty data list.
     private _initializeDataList(){
         this._list = new Map<string, IBag<string>>();
