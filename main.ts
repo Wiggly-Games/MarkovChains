@@ -6,11 +6,12 @@ import { IData, IMarkovChain } from "./interfaces";
 import { DataList, Generate, Train, TConfiguration } from "./src";
 import { CreateDirectory, ReadFile, Overwrite } from "@wiggly-games/files";
 import { Bag, IBag } from "@wiggly-games/data-structures";
+import { encode, decode } from "msgpackr";
 
 export { TConfiguration as ChainConfiguration } from "./src";
 
-const getData = (root: string) => `${root}/Data.json`;
-const getStartingKeys = (root: string) => `${root}/StartingKeys.json`
+const getData = (root: string) => `${root}/Data.msgpack`;
+const getStartingKeys = (root: string) => `${root}/StartingKeys.msgpack`
 // Export the class
 export class MarkovChain implements IMarkovChain {
     _chain: IData;
@@ -35,8 +36,8 @@ export class MarkovChain implements IMarkovChain {
 
     // Loads existing chain data from a file.
     async Load(){
-        const data = JSON.parse(await ReadFile(getData(this._root)));
-        const startingKeys = JSON.parse(await ReadFile(getStartingKeys(this._root)));
+        const data = decode(await ReadFile(getData(this._root)));
+        const startingKeys = decode(await ReadFile(getStartingKeys(this._root)));
 
         this._chain = DataList.FromData(startingKeys, data, (...args)=>new Bag(...args));
     }
@@ -45,7 +46,7 @@ export class MarkovChain implements IMarkovChain {
     async Save(){
         await CreateDirectory(this._root);
 
-        await Overwrite(getData(this._root), JSON.stringify(this._chain.GetData()));
-        await Overwrite(getStartingKeys(this._root), JSON.stringify(this._chain.GetStartingKeys()));
+        await Overwrite(getData(this._root), encode(this._chain.GetData()));
+        await Overwrite(getStartingKeys(this._root), encode(this._chain.GetStartingKeys()));
     }
 }
