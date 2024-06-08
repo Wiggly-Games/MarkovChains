@@ -1,10 +1,10 @@
 import { Bag } from "@wiggly-games/data-structures";
 import { MarkovChain } from "./main";
-import * as TestData from "./TestData/Wiggles.json"
+import * as TestData from "./TestData/WeirdAl.json"
 import { CreateDirectory } from "@wiggly-games/files";
 
 (async () => {
-    const path = require.main.path + "\\Static\\Wiggles";
+    const path = require.main.path + "\\Static\\WeirdAl";
     CreateDirectory(require.main.path + "\\Static");
 
     const chain = new MarkovChain(path, {
