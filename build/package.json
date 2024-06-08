@@ -6,7 +6,7 @@
     "types": "types/main.d.ts",
     "scripts": {
       "start": "node main.js",
-      "test": "node --max-old-space-size=16384 test.js"
+      "test": "node test.js"
     },
     "author": "",
     "license": "ISC",
