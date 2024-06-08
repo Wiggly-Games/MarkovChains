@@ -34,6 +34,6 @@ export interface IData {
     GetStartKey(): Promise<string>;
     AddStartingKey(key: string): Promise<void>;
 
-    GetStartingKeys(): IBag<string>;
-    GetData(): Map<string, IBag<string>>;
+    GetStartingKeys(): [string, number][];
+    GetData(): [string, [string, number][]][];
 }

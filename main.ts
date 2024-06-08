@@ -2,42 +2,26 @@
     Main library for the Markov Chain text generator.
 */
 
-import { IData, IMarkovChain, IStringify } from "./interfaces";
+import { IData, IMarkovChain } from "./interfaces";
 import { DataList, Generate, Train, TConfiguration } from "./src";
 import { CreateDirectory, ReadFile, Overwrite } from "@wiggly-games/files";
 import { Bag, IBag } from "@wiggly-games/data-structures";
-import { JsonStringifier } from "./src/DataStringifier/JsonStringifier";
+import { encode, decode } from "msgpackr";
 
 export { TConfiguration as ChainConfiguration } from "./src";
 
-type DataListMap = {
-    StartingKeys: IBag<string>,
-    Data: Map<string, IBag<string>>
-};
-
-// Create our JSON stringifier/parser.
-const json : IStringify<IData> = new JsonStringifier<IData>();
-json.AddClassDefinition(Map, (data: Map<any, any>)=>Array.from(data.entries()), (data:any)=>new Map(data));
-json.AddClassDefinition(Bag, (data: Bag<any>)=>Array.from(data.ConvertToMap().entries()), (data:any)=>new Bag(data));
-json.AddClassDefinition(DataList, (data: DataList) => {
-    return {
-        StartingKeys: data.GetStartingKeys(),
-        Data: data.GetData()
-    }
-}, (data: DataListMap) => {
-    return DataList.FromData(data.StartingKeys, data.Data, () => new Bag());
-});
-
+const getData = (root: string) => `${root}/Data.msgpack`;
+const getStartingKeys = (root: string) => `${root}/StartingKeys.msgpack`
 // Export the class
 export class MarkovChain implements IMarkovChain {
     _chain: IData;
     _configuration: TConfiguration;
-    _path: string;
+    _root: string;
 
     constructor(inputPath: string, configuration: TConfiguration) {
         this._chain = new DataList(()=>new Bag());
         this._configuration = configuration;
-        this._path = `${inputPath}.json`;
+        this._root = inputPath;
     }
 
     // Trains new data into the chain.
@@ -52,12 +36,17 @@ export class MarkovChain implements IMarkovChain {
 
     // Loads existing chain data from a file.
     async Load(){
-        this._chain = json.Parse(await ReadFile(this._path));
+        const data = decode(await ReadFile(getData(this._root)));
+        const startingKeys = decode(await ReadFile(getStartingKeys(this._root)));
+
+        this._chain = DataList.FromData(startingKeys, data, (...args)=>new Bag(...args));
     }
 
     // Saves the trained chain data to a file.
     async Save(){
-        const data = json.Stringify(this._chain);
-        await Overwrite(this._path, data);
+        await CreateDirectory(this._root);
+
+        await Overwrite(getData(this._root), encode(this._chain.GetData()));
+        await Overwrite(getStartingKeys(this._root), encode(this._chain.GetStartingKeys()));
     }
 }
