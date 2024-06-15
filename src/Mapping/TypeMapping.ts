@@ -1,4 +1,5 @@
 import { ITypeMapping } from "../../interfaces";
+import { TInternal } from "../Types";
 
 export class TypeMapping<T> implements ITypeMapping<T> {
     private _values: T[];
@@ -31,12 +32,13 @@ export class TypeMapping<T> implements ITypeMapping<T> {
     }
     
     // Retrieves the numerical value for a piece of data.
-    GetValue(data: T): number {
-        return this._map.get(data);
+    GetValue(data: T): TInternal {
+        const index = this._map.get(data);
+        return index;
     }
 
     // Returns the data value given its numerical representation.
-    Parse(value: number): T {
+    Parse(value: TInternal): T {
         return this._values[value];
     }
 
