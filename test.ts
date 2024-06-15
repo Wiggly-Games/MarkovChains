@@ -6,7 +6,7 @@ import { ClearBlanks } from "./src/Helpers";
 import * as Files from "@wiggly-games/files";
 import * as os from "os";
 
-const log = "./Logs-3.txt";
+let log: string;
 const delayAmnt = 10;
 
 const start = new Date().getTime();
@@ -33,20 +33,7 @@ function writeLog(txt: string) {
     console.log(txt);
 }
 
-async function main(){
-    const path = require.main.path + "\\Static\\Wiggles";
-    CreateDirectory(require.main.path + "\\Static");
-
-    const chain = new MarkovChain<string>(path, {
-        WordCount: 50,
-        Backoff: true,
-        MinBackoffLength: 2,
-        TrainingLength: 5,
-        MinRequiredOptions: 3,
-        StopAtFewerOptions: false
-    });
-
-    
+async function train(chain: MarkovChain<string>){
     const input = TestData as string[];
     const trainingData: string[][] = [];
 
@@ -63,15 +50,15 @@ async function main(){
     writeLog(`Finished training.`);
     global.gc();
     await delay(delayAmnt);
-
-
+    
     writeLog(`Started saving.`);
     await chain.Save();
     writeLog(`Finished saving.`);
     global.gc();
     await delay(delayAmnt);
-    
-    /*
+}
+
+async function generate(chain: MarkovChain<string>){
     writeLog(`Starting loading.`);
     await chain.Load();
     writeLog(`Finished loading.`);
@@ -85,11 +72,53 @@ async function main(){
         await delay(1);
     }
     writeLog(`Stopped generating.`);
-    */
 }
 
-(async () => {
-    //await main();
-    global.gc();
-    console.log("garbage collected");
-})();
+async function main(mode: number){
+    const path = require.main.path + "\\Static\\Wiggles";
+    CreateDirectory(require.main.path + "\\Static");
+
+    const chain = new MarkovChain<string>(path, {
+        WordCount: 50,
+        Backoff: true,
+        MinBackoffLength: 2,
+        TrainingLength: 5,
+        MinRequiredOptions: 3,
+        StopAtFewerOptions: false
+    });
+
+    if (mode === 0) {
+        await generate(chain);
+    } else {
+        await train(chain);
+    }
+
+    clearInterval(interval);
+}
+
+const mode = process.argv.find(x => x.startsWith("mode="))?.substring(5);
+const output = process.argv.find(x => x.startsWith("out="))?.substring(4);
+log = output ?? "./log.txt";
+console.log(`Writing logs to file: ${log}`);
+
+if (!global.gc) {
+    console.error(`Test script requires the --expose-gc command line argument.`);
+    console.error(`Please run again with the argument provided.`);
+} else {
+    switch (mode) {
+        case "generate":
+        case "g":
+        case "0":
+            main(0);
+            break;
+        case "train":
+        case "t":
+        case "1":
+            main(1);
+            break;
+        default:
+            console.warn(`Unknown mode: ${mode}; please enter 'train' or 'generate'`);
+            clearInterval(interval);
+            break;
+    }
+}

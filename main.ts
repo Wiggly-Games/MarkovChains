@@ -3,7 +3,7 @@
 */
 
 import { IData, IMarkovChain, ITypeMapping } from "./interfaces";
-import { DataList, Generate, Train, TConfiguration } from "./src";
+import { DataList, Generate, Train, TConfiguration, TInternal } from "./src";
 import { CreateDirectory, WithReadStream, Overwrite } from "@wiggly-games/files";
 import { Bag, IBag } from "@wiggly-games/data-structures";
 import { Encoder, Decoder } from "@msgpack/msgpack";
@@ -86,7 +86,7 @@ export class MarkovChain<T> implements IMarkovChain<T> {
     }
 
     // Given a list of numbers, returns the data value representation.
-    private ParseOutputData(output: number[]): T[] {
+    private ParseOutputData(output: TInternal[]): T[] {
         const result = [];
         output.forEach(value => {
             result.push(this._mapping.Parse(value));

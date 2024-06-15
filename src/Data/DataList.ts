@@ -6,10 +6,9 @@ import { IData } from "../../interfaces";
 import * as Files from "@wiggly-games/files";
 import { Bag, IBag } from "@wiggly-games/data-structures";
 import { MarkovChain } from "../../main";
+import { CreateKeyFromSequence } from "../Helpers";
 
 // Parses a sequence of numbers into a key for the data array.
-const parseToKey = (sequence: any[]) => sequence.join(".");
-
 export class DataList implements IData  {
     protected _list: Map<string, IBag<any>>;
     protected _startingKeys: IBag<any>;
@@ -40,11 +39,11 @@ export class DataList implements IData  {
     }
 
     GetCount(sequence: any[]): Promise<any> {
-        const key = parseToKey(sequence);
+        const key = CreateKeyFromSequence(sequence);
         return Promise.resolve(this._list.has(key) ? this._list.get(key).CountContents() : 0);
     }
     async Get(sequence: any[]): Promise<any | undefined> {
-        const key = parseToKey(sequence);
+        const key = CreateKeyFromSequence(sequence);
         let results = this._list.get(key);
     
         // If there is no next word for this sequence, return nothing.
@@ -56,7 +55,7 @@ export class DataList implements IData  {
     }
     Add(sequence: any[], next: any): Promise<void> {
         const list = this._list;
-        const key = parseToKey(sequence);
+        const key = CreateKeyFromSequence(sequence);
 
         // If we haven't already seen this sequence, start a new list.
         if (!list.has(key)) {

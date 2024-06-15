@@ -24,14 +24,16 @@
         Load(): Loads the data from a file, allowing it to be used for generating chains.
 */
 
+import { TInternal } from "../src";
+
 export interface IData {
-    GetCount(sequence: number[]): Promise<number>;
-    Get(sequence: number[]): Promise<number | undefined>;
-    Add(sequence: number[], next: number): Promise<void>;
+    GetCount(sequence: TInternal[]): Promise<number>;
+    Get(sequence: TInternal[]): Promise<TInternal | undefined>;
+    Add(sequence: TInternal[], next: TInternal): Promise<void>;
 
-    GetStartKey(): Promise<number>;
-    AddStartingKey(key: number): Promise<void>;
+    GetStartKey(): Promise<TInternal>;
+    AddStartingKey(key: TInternal): Promise<void>;
 
-    GetStartingKeys(): [number, number][];
-    GetData(): [string, [number, number][]][];
+    GetStartingKeys(): [TInternal, number][];
+    GetData(): [string, [TInternal, number][]][];
 }
