@@ -12,8 +12,9 @@ export { TConfiguration as ChainConfiguration } from "./src";
 
 const getData = (root: string) => `${root}/Data.msgpack`;
 const getStartingKeys = (root: string) => `${root}/StartingKeys.msgpack`
+
 // Export the class
-export class MarkovChain implements IMarkovChain {
+export class MarkovChain<T> implements IMarkovChain<T> {
     _chain: IData;
     _configuration: TConfiguration;
     _root: string;
@@ -25,12 +26,12 @@ export class MarkovChain implements IMarkovChain {
     }
 
     // Trains new data into the chain.
-    async Train(data: string) {
+    async Train(data: T[][]) {
         await Train(this._chain, data, this._configuration);
     }
 
     // Generates data from the chain.
-    async Generate(): Promise<string> {
+    async Generate(): Promise<T[]> {
         return await Generate(this._chain, this._configuration);
     }
 

@@ -16,11 +16,21 @@ import { CreateDirectory } from "@wiggly-games/files";
         StopAtFewerOptions: false
     });
 
+    await chain.Train([
+        [1, 2, 3, 4, 5],
+        [1, 2, 4, 3, 5],
+        [1, 2, 5, 4, 3]
+    ]);
+    console.log(chain);
+
+    const result = await chain.Generate();
+    console.log(result);
+
     //await chain.Train((TestData as string[]).join("\n"));
     //await chain.Save();
     
-    await chain.Load();
+    /*await chain.Load();
     for (let i = 0; i < 100; i++) {
         console.log(await chain.Generate());
-    }
+    }*/
 })()
