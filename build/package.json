@@ -6,7 +6,7 @@
     "types": "types/main.d.ts",
     "scripts": {
       "start": "node main.js",
-      "test": "node test.js"
+      "test": "node --expose-gc test.js"
     },
     "author": "",
     "license": "ISC",
