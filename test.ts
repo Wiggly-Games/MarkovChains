@@ -75,7 +75,7 @@ async function generate(chain: MarkovChain<string>){
 }
 
 async function main(mode: number){
-    const path = require.main.path + "\\Static\\Wiggles-Str";
+    const path = require.main.path + "\\Static\\Wiggles";
     CreateDirectory(require.main.path + "\\Static");
 
     const chain = new MarkovChain<string>(path, {
