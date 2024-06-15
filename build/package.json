@@ -6,7 +6,8 @@
     "types": "types/main.d.ts",
     "scripts": {
       "start": "node main.js",
-      "test": "node --expose-gc test.js"
+      "train": "node --expose-gc test.js -- mode=train",
+      "generate": "node --expose-gc test.js -- mode=generate"
     },
     "author": "",
     "license": "ISC",

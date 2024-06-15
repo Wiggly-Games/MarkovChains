@@ -8,7 +8,8 @@
         "compile": "tsc",
         "dev": "npm run compile && npm start",
         "start": "cd build && npm start",
-        "test": "npm run compile && cd build && npm run test",
+        "train": "npm run compile && cd build && npm run train",
+        "generate": "npm run compile && cd build && npm run generate",
         "sandbox": "cd build && node",
         "clean": "rmdir /S /Q \"build/Logs/LogFiles\"",
         "zip": "tar.exe -a -c -f build.zip build"

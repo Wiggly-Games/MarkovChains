@@ -96,8 +96,8 @@ async function main(mode: number){
     clearInterval(interval);
 }
 
-const mode = process.argv.find(x => x.startsWith("mode=")).substring(5);
-const output = process.argv.find(x => x.startsWith("out=")).substring(4);
+const mode = process.argv.find(x => x.startsWith("mode="))?.substring(5);
+const output = process.argv.find(x => x.startsWith("out="))?.substring(4);
 log = output ?? "./log.txt";
 console.log(`Writing logs to file: ${log}`);
 
@@ -109,13 +109,11 @@ if (!global.gc) {
         case "generate":
         case "g":
         case "0":
-            console.log("generate");
             main(0);
             break;
         case "train":
         case "t":
         case "1":
-            console.log("train");
             main(1);
             break;
         default:
