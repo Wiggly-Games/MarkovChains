@@ -12,11 +12,10 @@
 
 
 import { IData } from "../../interfaces";
-import { JoinWords, SplitSentences, SplitWords } from "../Helpers";
 
 // Adds the sequence to our data set.
 // Given the index of the new word to add, the total number of words that builds up a single sequence, and whether or not to apply backoff.
-async function addToData(data: IData, sequence: string[], index: number, maxChainLength: number, backoff: boolean) {
+async function addToData(data: IData, sequence: any[], index: number, maxChainLength: number, backoff: boolean) {
     if (maxChainLength === 0) {
         return;
     }
@@ -34,7 +33,7 @@ async function addToData(data: IData, sequence: string[], index: number, maxChai
     let totalSequence = sequence.slice(Math.max(0, index - maxChainLength), index);
     let nextWord = sequence[index];
 
-    await data.Add(JoinWords(totalSequence), nextWord);
+    await data.Add(totalSequence, nextWord);
 
     // If we're performing backoff, shorten the string
     if (backoff) {
@@ -43,24 +42,18 @@ async function addToData(data: IData, sequence: string[], index: number, maxChai
 }
 
 // Performs the training, given a set to train against.
-export async function Train(data: IData, trainingSet: string, {TrainingLength, Backoff}) {
-    // Split up our sequences into separate sentences to be trained against.
-    const sequences = SplitSentences(trainingSet);
-
+export async function Train(data: IData, sequences: any[][], {TrainingLength, Backoff}) {
     // Create a set of Promises to train against each sequence,
     // Then wait for all the sequences to complete
     await Promise.all(sequences.map(sequence => {
         return new Promise<void>(async (fulfill) => {
-            // Split the sequence into separate words
-            let words = SplitWords(sequence);
-
             // The first word can be used to start a new sequence.
-            await data.AddStartingKey(words[0]);
+            await data.AddStartingKey(sequence[0]);
 
             // Go through every word to add it to our chain.
-            for (let i = 1; i < words.length; i++) {
+            for (let i = 1; i < sequence.length; i++) {
                 // From here, we train against the last X words.
-                await addToData(data, words, i, TrainingLength, Backoff);
+                await addToData(data, sequence, i, TrainingLength, Backoff);
             }
 
             fulfill();

@@ -5,4 +5,4 @@
 */
 
 export const ClearBlanks = (x: string[]) => x.filter(x => x !== "");
-export const GetEndSequence = (sequence: string[], chainLength: number) => sequence.slice(-chainLength);
+export const GetEndSequence = (sequence: any[], chainLength: number) => sequence.slice(-chainLength);

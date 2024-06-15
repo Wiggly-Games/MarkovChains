@@ -24,16 +24,14 @@
         Load(): Loads the data from a file, allowing it to be used for generating chains.
 */
 
-import { IBag } from "@wiggly-games/data-structures";
-
 export interface IData {
-    GetCount(sequence: string): Promise<number>;
-    Get(sequence: string): Promise<string | undefined>;
-    Add(sequence: string, next: string): Promise<void>;
+    GetCount(sequence: number[]): Promise<number>;
+    Get(sequence: number[]): Promise<number | undefined>;
+    Add(sequence: number[], next: number): Promise<void>;
 
-    GetStartKey(): Promise<string>;
-    AddStartingKey(key: string): Promise<void>;
+    GetStartKey(): Promise<number>;
+    AddStartingKey(key: number): Promise<void>;
 
-    GetStartingKeys(): [string, number][];
-    GetData(): [string, [string, number][]][];
+    GetStartingKeys(): [number, number][];
+    GetData(): [string, [number, number][]][];
 }

@@ -1,13 +1,43 @@
 import { Bag } from "@wiggly-games/data-structures";
 import { MarkovChain } from "./main";
-import * as TestData from "./TestData/WeirdAl.json"
+import * as TestData from "./TestData/Wiggles.json"
 import { CreateDirectory } from "@wiggly-games/files";
+import { ClearBlanks } from "./src/Helpers";
+import * as Files from "@wiggly-games/files";
+import * as os from "os";
 
-(async () => {
-    const path = require.main.path + "\\Static\\WeirdAl";
+const log = "./Logs-3.txt";
+const delayAmnt = 10;
+
+const start = new Date().getTime();
+const interval = setInterval(async () => {
+    const mu = process.memoryUsage();
+    // # bytes / KB / MB / GB
+    const gbNow = mu.heapUsed / 1024 / 1024 / 1024;
+    const gbRounded = Math.round(gbNow * 100) / 100;
+   
+    const elapsedTimeInSecs = (Date.now() - start) / 1000;
+    const timeRounded = Math.round(elapsedTimeInSecs * 100) / 100;
+   
+    await Files.Append(log, timeRounded + "," + gbRounded + os.EOL); // fire-and-forget
+}, 500);
+
+function delay(ms: number) {
+    return new Promise((fulfill) => {
+        setTimeout(fulfill, ms);
+    });
+}
+
+function writeLog(txt: string) {
+    Files.Append(log, txt);
+    console.log(txt);
+}
+
+async function main(){
+    const path = require.main.path + "\\Static\\Wiggles";
     CreateDirectory(require.main.path + "\\Static");
 
-    const chain = new MarkovChain(path, {
+    const chain = new MarkovChain<string>(path, {
         WordCount: 50,
         Backoff: true,
         MinBackoffLength: 2,
@@ -16,11 +46,50 @@ import { CreateDirectory } from "@wiggly-games/files";
         StopAtFewerOptions: false
     });
 
-    //await chain.Train((TestData as string[]).join("\n"));
-    //await chain.Save();
     
+    const input = TestData as string[];
+    const trainingData: string[][] = [];
+
+    input.forEach(line => {
+        let sentences = ClearBlanks(line.replace(/([.?!])\s*(?=[A-Z])/g, "$1|").split(/[\|\n]/).map(x => x.trim()));
+        sentences.forEach(sentence => {
+            let words = ClearBlanks(sentence.split(" "));
+            trainingData.push(words);
+        });
+    });
+
+    writeLog(`Started training.`);
+    await chain.Train(trainingData);
+    writeLog(`Finished training.`);
+    global.gc();
+    await delay(delayAmnt);
+
+
+    writeLog(`Started saving.`);
+    await chain.Save();
+    writeLog(`Finished saving.`);
+    global.gc();
+    await delay(delayAmnt);
+    
+    /*
+    writeLog(`Starting loading.`);
     await chain.Load();
-    for (let i = 0; i < 100; i++) {
-        console.log(await chain.Generate());
+    writeLog(`Finished loading.`);
+
+    await delay(delayAmnt);
+    writeLog(`Started generating.`);
+
+    for (let i = 0; i < 10000; i++) {
+        await chain.Generate();
+        global.gc();
+        await delay(1);
     }
-})()
+    writeLog(`Stopped generating.`);
+    */
+}
+
+(async () => {
+    //await main();
+    global.gc();
+    console.log("garbage collected");
+})();
