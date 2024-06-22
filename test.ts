@@ -52,24 +52,31 @@ async function train(chain: MarkovChain<string>){
     await delay(delayAmnt);
     
     writeLog(`Started saving.`);
-    await chain.Save();
+    await chain.Save((x) => x);
     writeLog(`Finished saving.`);
     global.gc();
     await delay(delayAmnt);
 }
 
-async function generate(chain: MarkovChain<string>){
+async function generate(chain: MarkovChain<string>, gc: boolean){
+    const start = new Date().getTime();
+
     writeLog(`Starting loading.`);
-    await chain.Load();
-    writeLog(`Finished loading.`);
+    await chain.Load((x) => x);
+    writeLog(`Finished loading. Loaded in ${new Date().getTime() - start} ms.`);
 
     await delay(delayAmnt);
     writeLog(`Started generating.`);
 
-    for (let i = 0; i < 10000; i++) {
-        await chain.Generate();
-        global.gc();
-        await delay(1);
+    let count = gc ? 10000 : 50;
+    for (let i = 0; i < count; i++) {
+        let res = await chain.Generate();
+        if (gc){
+            global.gc();
+            await delay(1);
+        } else {
+            console.log(res.join(" "));
+        }
     }
     writeLog(`Stopped generating.`);
 }
@@ -88,9 +95,11 @@ async function main(mode: number){
     });
 
     if (mode === 0) {
-        await generate(chain);
-    } else {
+        await generate(chain, false);
+    } else if (mode === 1) {
         await train(chain);
+    } else {
+        await generate(chain, true);
     }
 
     clearInterval(interval);
@@ -115,6 +124,9 @@ if (!global.gc) {
         case "t":
         case "1":
             main(1);
+            break;
+        case "gc":
+            main(2);
             break;
         default:
             console.warn(`Unknown mode: ${mode}; please enter 'train' or 'generate'`);

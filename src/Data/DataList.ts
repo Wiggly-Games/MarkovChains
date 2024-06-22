@@ -7,6 +7,8 @@ import * as Files from "@wiggly-games/files";
 import { Bag, IBag } from "@wiggly-games/data-structures";
 import { MarkovChain } from "../../main";
 import { CreateKeyFromSequence } from "../Helpers";
+import { Reader } from "@wiggly-games/node-readline";
+import { ParseT } from "../Types";
 
 // Parses a sequence of numbers into a key for the data array.
 export class DataList implements IData  {
@@ -19,25 +21,7 @@ export class DataList implements IData  {
         this._getBag = getBag;
         this._initializeDataList();
     }
-
-    // Constructs a new DataList given the StartKeys + Data mapping.
-    static FromData(startKeys: [any, number][], data: [string, IterableIterator<[any, number]>][], getBag: (values?: Iterable<[any, number]>)=>Bag<any>) {
-        const dataList = new DataList(getBag);
-
-        // Set the starting keys
-        dataList._startingKeys = getBag(startKeys);
-        
-        // Build up the data list
-        const list = new Map<string, IBag<any>>();
-        data.forEach(([key, contents]) => {
-            // Set the bag for every key - this is an array of entries, so we can just pass it directly
-            list.set(key, getBag(contents));
-        });
-        dataList._list = list;
-
-        return dataList;
-    }
-
+    
     GetCount(sequence: any[]): Promise<any> {
         const key = CreateKeyFromSequence(sequence);
         return Promise.resolve(this._list.has(key) ? this._list.get(key).CountContents() : 0);
@@ -84,7 +68,40 @@ export class DataList implements IData  {
         return lists;
     }
 
-    
+    // Data Persistence
+    // Load the Chain data from a file
+    async Load(filePath: string): Promise<void> {
+        const reader = new Reader(filePath);
+        
+        // 1. Read all the starting keys
+        this._startingKeys.Read(reader, ParseT);
+
+        // 2. Read the map entries
+        while (reader.HasNextLine()){
+            const key = reader.ReadLine();
+            const bag = new Bag();
+            bag.Read(reader, ParseT);
+
+            this._list.set(key, bag);
+        }
+    }
+    // Save the Chain data into a file
+    async Save(filePath: string): Promise<void> {
+        await Files.WithWriteStream(filePath, async (stream) => {
+            // Write all the starting keys
+            await this._startingKeys.Write(stream);
+            
+            // Write every map
+            // Will be key, followed by the contents of that key.
+            for (const [key, bag] of this._list) {
+                await stream.write(key + "\n");
+                await bag.Write(stream);
+            };
+            
+            return undefined;
+        })
+    }
+
     // Initializes a new, empty data list.
     private _initializeDataList(){
         this._list = new Map<string, IBag<any>>();

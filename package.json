@@ -10,6 +10,7 @@
         "start": "cd build && npm start",
         "train": "npm run compile && cd build && npm run train",
         "generate": "npm run compile && cd build && npm run generate",
+        "gc": "npm run compile && cd build && npm run gc",
         "sandbox": "cd build && node",
         "clean": "rmdir /S /Q \"build/Logs/LogFiles\"",
         "zip": "tar.exe -a -c -f build.zip build"
@@ -20,8 +21,8 @@
         "@types/node": "latest"
     },
     "dependencies": {
-        "@msgpack/msgpack": "^3.0.0-beta2",
-        "@wiggly-games/data-structures": "^2.0.0",
-        "@wiggly-games/files": "^1.1.1"
+        "@wiggly-games/data-structures": "^2.0.3",
+        "@wiggly-games/files": "^1.1.1",
+        "@wiggly-games/node-readline": "^1.0.1"
     }
 }

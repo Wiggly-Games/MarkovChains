@@ -7,7 +7,8 @@
     "scripts": {
       "start": "node main.js",
       "train": "node --expose-gc test.js -- mode=train",
-      "generate": "node --expose-gc test.js -- mode=generate"
+      "generate": "node --expose-gc test.js -- mode=generate",
+      "gc": "node --expose-gc test.js -- mode=gc"
     },
     "author": "",
     "license": "ISC",
