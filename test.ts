@@ -1,6 +1,6 @@
 import { Bag } from "@wiggly-games/data-structures";
 import { MarkovChain } from "./main";
-import * as TestData from "./TestData/Wiggles.json"
+import * as TestData from "./TestData/WeirdAl.json"
 import { CreateDirectory } from "@wiggly-games/files";
 import { ClearBlanks } from "./src/Helpers";
 import * as Files from "@wiggly-games/files";
