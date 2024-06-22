@@ -34,6 +34,6 @@ export interface IData {
     GetStartKey(): Promise<TInternal>;
     AddStartingKey(key: TInternal): Promise<void>;
 
-    GetStartingKeys(): [TInternal, number][];
-    GetData(): [string, [TInternal, number][]][];
+    Load(filePath: string): Promise<void>;
+    Save(filePath: string): Promise<void>;
 }

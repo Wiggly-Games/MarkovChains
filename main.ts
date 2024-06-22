@@ -4,19 +4,12 @@
 
 import { IData, IMarkovChain, ITypeMapping } from "./interfaces";
 import { DataList, Generate, Train, TConfiguration, TInternal } from "./src";
-import { CreateDirectory, WithReadStream, Overwrite } from "@wiggly-games/files";
+import { CreateDirectory, WithWriteStream } from "@wiggly-games/files";
 import { Bag, IBag } from "@wiggly-games/data-structures";
-import { Encoder, Decoder } from "@msgpack/msgpack";
 import { TypeMapping } from "./src/Mapping";
+import { Reader } from "@wiggly-games/node-readline";
 
 export { TConfiguration as ChainConfiguration } from "./src";
-
-const getData = (root: string) => `${root}/Data.msgpack`;
-const getStartingKeys = (root: string) => `${root}/StartingKeys.msgpack`
-const getMapping = (root: string) => `${root}/Mapping.msgpack`
-
-const encoder = new Encoder();
-const decoder = new Decoder();
 
 // Export the class
 export class MarkovChain<T> implements IMarkovChain<T> {
@@ -54,22 +47,30 @@ export class MarkovChain<T> implements IMarkovChain<T> {
     }
 
     // Loads existing chain data from a file.
-    async Load(){
-        const data = await WithReadStream(getData(this._root), (s) => decoder.decodeAsync(s)) as any;
-        const startingKeys = await WithReadStream(getStartingKeys(this._root), (s) => decoder.decodeAsync(s)) as any;
-        const mapping = await WithReadStream(getMapping(this._root), (s) => decoder.decodeAsync(s)) as any;
+    async Load(parse: (dataString: string)=>T){
+        await this._chain.Load(`${this._root}/Data`);
 
-        this._chain = DataList.FromData(startingKeys, data, (...args)=>new Bag(...args));
-        this._mapping.Set(mapping);
+        // Read all the mapping values
+        const reader = new Reader(`${this._root}/Mapping`);
+        const values = [];
+        while (reader.HasNextLine()){
+            values.push(parse(reader.ReadLine()));
+        }
+        this._mapping.Set(values);
     }
 
     // Saves the trained chain data to a file.
-    async Save(){
+    async Save(stringify: (key: T)=>string){
         await CreateDirectory(this._root);
+        await this._chain.Save(`${this._root}/Data`);
 
-        await Overwrite(getData(this._root), encoder.encode(this._chain.GetData()));
-        await Overwrite(getStartingKeys(this._root), encoder.encode(this._chain.GetStartingKeys()));
-        await Overwrite(getMapping(this._root), encoder.encode(this._mapping.GetAllValues()));
+        // Save all the mapping values into a separate file
+        await WithWriteStream(`${this._root}/Mapping`, (stream)=>{
+            this._mapping.GetAllValues().forEach(value => {
+                stream.write(stringify(value) + "\n");
+            });
+            return undefined;
+        })
     }
 
     // Given the data values, converts to a list of numbers for internal use.

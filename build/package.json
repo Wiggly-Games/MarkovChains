@@ -1,13 +1,14 @@
 {
     "name": "@wiggly-games/markov-chains",
-    "version": "4.0.0",
+    "version": "5.0.0",
     "description": "",
     "main": "main.js",
     "types": "types/main.d.ts",
     "scripts": {
       "start": "node main.js",
       "train": "node --expose-gc test.js -- mode=train",
-      "generate": "node --expose-gc test.js -- mode=generate"
+      "generate": "node --expose-gc test.js -- mode=generate",
+      "gc": "node --expose-gc test.js -- mode=gc"
     },
     "author": "",
     "license": "ISC",
