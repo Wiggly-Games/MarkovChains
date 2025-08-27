@@ -8,7 +8,7 @@
       "start": "node main.js",
       "train": "node --expose-gc test.js -- mode=train",
       "generate": "node --expose-gc test.js -- mode=generate",
-      "gc": "node --expose-gc test.js -- mode=gc"
+      "gen-2": "node --expose-gc test.js -- mode=phrase"
     },
     "author": "",
     "license": "ISC",

@@ -37,9 +37,18 @@ export class MarkovChain<T> implements IMarkovChain<T> {
     }
 
     // Generates data from the chain.
-    async Generate(): Promise<T[]> {
+    async Generate(startingSequence?: T[] | undefined): Promise<T[]> {
+        // if a starting sequence isn't passed in, initialize it with an empty array
+        if (startingSequence === undefined) {
+            startingSequence = [];
+        }
+
+        // convert the data into the internal format
+        this._mapping.Update(startingSequence);
+        let initData = this.ConvertInputSet(startingSequence);
+
         // Retrieve the numerical representation values
-        const output = await Generate(this._chain, this._configuration);
+        const output = await Generate(this._chain, this._configuration, initData);
 
         // Build them up into the actual data values, so that we can return it to the user
         // in their expected format
@@ -77,11 +86,14 @@ export class MarkovChain<T> implements IMarkovChain<T> {
     private ConvertInputData(input: T[][]): number[][] {
         const result = [ ];
         input.forEach((inputSet) => {
-            const next = [ ];
-            inputSet.forEach(value => {
-                next.push(this._mapping.GetValue(value));
-            })
-            result.push(next);
+            result.push(this.ConvertInputSet(inputSet));
+        });
+        return result;
+    }
+    private ConvertInputSet(input: T[]): number[] {
+        const result = [ ];
+        input.forEach(value => {
+            result.push(this._mapping.GetValue(value));
         });
         return result;
     }

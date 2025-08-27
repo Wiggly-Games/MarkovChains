@@ -10,7 +10,7 @@
         "start": "cd build && npm start",
         "train": "npm run compile && cd build && npm run train",
         "generate": "npm run compile && cd build && npm run generate",
-        "gc": "npm run compile && cd build && npm run gc",
+        "gen-2": "npm run compile && cd build && npm run gen-2",
         "sandbox": "cd build && node",
         "clean": "rmdir /S /Q \"build/Logs/LogFiles\"",
         "zip": "tar.exe -a -c -f build.zip build"
