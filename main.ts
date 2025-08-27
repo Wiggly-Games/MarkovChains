@@ -37,12 +37,7 @@ export class MarkovChain<T> implements IMarkovChain<T> {
     }
 
     // Generates data from the chain.
-    async Generate(startingSequence?: T[] | undefined): Promise<T[]> {
-        // if a starting sequence isn't passed in, initialize it with an empty array
-        if (startingSequence === undefined) {
-            startingSequence = [];
-        }
-
+    async Generate(startingSequence: T[] = []): Promise<T[]> {
         // convert the data into the internal format
         this._mapping.Update(startingSequence);
         let initData = this.ConvertInputSet(startingSequence);
