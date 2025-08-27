@@ -23,6 +23,7 @@
     "dependencies": {
         "@wiggly-games/data-structures": "^2.0.3",
         "@wiggly-games/files": "^1.1.1",
-        "@wiggly-games/node-readline": "^1.0.1"
+        "@wiggly-games/node-readline": "^1.0.1",
+        "msgpackr": "^1.10.2"
     }
 }
