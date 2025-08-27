@@ -7,5 +7,5 @@
 
 export interface IMarkovChain<T> {
     Train(data: T[][]): Promise<void>;
-    Generate(): Promise<T[]>;
+    Generate(startingSequence?: T[] | undefined): Promise<T[]>;
 }

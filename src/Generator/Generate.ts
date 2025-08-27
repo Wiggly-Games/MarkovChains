@@ -43,13 +43,17 @@ async function getNextValue(data: IData, sequence: any[], maxChainLength: number
     return await data.Get(GetEndSequence(sequence, chainLength));
 }
 
-export async function Generate(data: IData, {WordCount, MinRequiredOptions, Backoff, MinBackoffLength, TrainingLength, StopAtFewerOptions}): Promise<any[]> {
+export async function Generate(data: IData, {WordCount, MinRequiredOptions, Backoff, MinBackoffLength, TrainingLength, StopAtFewerOptions}, startingSequence: any[]): Promise<any[]> {
     // 1. We need to pick a starting key.
     // 2. Until we reach a certain number of words, sequences, or we end up looping; generate a new word.
     //      - We want a certain number of options available, and if we don't reach that number, we perform backoff.
 
-    // Get a starting key
-    const sequence = [ ];
+    let sequence = [...startingSequence];
+    let sequenceIsGenerating = false;
+    let switchedSequences = false;
+    
+    // Set up a secondary sequence just in case there's nothing passed in
+    let newSequence = [];
     let startKey = await data.GetStartKey(); 
 
     // If we don't have any starting keys, throw an error.
@@ -58,21 +62,42 @@ export async function Generate(data: IData, {WordCount, MinRequiredOptions, Back
     }
 
     // Start off the sequence
-    sequence.push(startKey);
+    newSequence.push(startKey)
+
+    // If nothing was passed in, set sequence to the testSequence here
+    if (sequence.length === 0) {
+        sequence = newSequence;
+        sequenceIsGenerating = true;
+    }
 
     // Generate words
     while (sequence.length < WordCount) {
-        const nextWord = await getNextValue(data, sequence, TrainingLength, MinBackoffLength, Backoff, MinRequiredOptions, StopAtFewerOptions);
+        let nextWord = await getNextValue(data, sequence, TrainingLength, MinBackoffLength, Backoff, MinRequiredOptions, StopAtFewerOptions);
         
-        // If we didn't find any words, exit here
-        if (nextWord === undefined) {
+        // If we can't generate off the passed in sequence, use the newSequence to generate instead
+        if (nextWord === undefined && !sequenceIsGenerating) {
+            sequence = newSequence;
+            sequenceIsGenerating = true;
+            switchedSequences = true;
+            continue;
+        }
+
+        // If we've already generated & have no more matches, break out here
+        if (!nextWord) {
             break;
         }
 
-        // Add the word to the end of our sequence
+        // Otherwise add it to our sequence
         sequence.push(nextWord);
+        sequenceIsGenerating = true;
     }
 
     // Return our result
+    // If we had to switch sequences to generate new data, add the passed in values to the front
+    if (switchedSequences) {
+        return startingSequence.concat([...sequence]);
+    }
+
+    // Otherwise just return what was generated
     return sequence;
 }

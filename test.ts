@@ -58,26 +58,16 @@ async function train(chain: MarkovChain<string>){
     await delay(delayAmnt);
 }
 
-async function generate(chain: MarkovChain<string>, gc: boolean){
+async function generate(chain: MarkovChain<string>, seq?: string[]){
     const start = new Date().getTime();
-
-    writeLog(`Starting loading.`);
-    await chain.Load((x) => x);
-    writeLog(`Finished loading. Loaded in ${new Date().getTime() - start} ms.`);
+    chain.Load((x) => x);
 
     await delay(delayAmnt);
     writeLog(`Started generating.`);
 
-    let count = gc ? 10000 : 50;
-    for (let i = 0; i < count; i++) {
-        let res = await chain.Generate();
-        if (gc){
-            global.gc();
-            await delay(1);
-        } else {
-            console.log(res.join(" "));
-        }
-    }
+    let res = await chain.Generate(seq);
+    console.log(res);
+
     writeLog(`Stopped generating.`);
 }
 
@@ -95,11 +85,11 @@ async function main(mode: number){
     });
 
     if (mode === 0) {
-        await generate(chain, false);
+        await generate(chain);
     } else if (mode === 1) {
         await train(chain);
     } else {
-        await generate(chain, true);
+        await generate(chain);
     }
 
     clearInterval(interval);
@@ -125,7 +115,7 @@ if (!global.gc) {
         case "1":
             main(1);
             break;
-        case "gc":
+        case "phrase":
             main(2);
             break;
         default:
